@@ -1,0 +1,63 @@
+version: '3.8'
+
+services:
+  # 1. PostgreSQL 15 Database Service
+  postgres:
+    image: postgres:15-alpine
+    container_name: shoi_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: shoi_db
+      POSTGRES_USER: shoi_user
+      POSTGRES_PASSWORD: shoi_secure_password_2026
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U shoi_user -d shoi_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # 2. Local Ollama LLM Service (Qwen 2.5 / Llama 3.2)
+  ollama:
+    image: ollama/ollama:latest
+    container_name: shoi_ollama
+    restart: unless-stopped
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_models:/root/.ollama
+
+  # 3. Shoi Context-Aware FastAPI Backend & PWA
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: shoi_backend
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - APP_NAME=Shoi (সই) - Health Assistant
+      - DEBUG=False
+      - DATABASE_URL=postgresql://shoi_user:shoi_secure_password_2026@postgres:5432/shoi_db
+      - SECRET_KEY=super-secret-key-change-in-production-shoi-bn-2026
+      - LLM_PROVIDER=ollama
+      - LLM_MODEL=qwen2.5:7b
+      - OLLAMA_BASE_URL=http://ollama:11434
+      - TTS_ENGINE=edge-tts
+      - BANGLA_VOICE=bn-BD-NabanitaNeural
+    volumes:
+      - shoi_data:/app/data
+    depends_on:
+      postgres:
+        condition: service_healthy
+      ollama:
+        condition: service_started
+
+volumes:
+  pg_data:
+  ollama_models:
+  shoi_data:

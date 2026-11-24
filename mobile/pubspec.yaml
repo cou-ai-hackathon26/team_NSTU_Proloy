@@ -1,0 +1,28 @@
+name: shoi_mobile
+description: "Privacy-preserving Bangla AI voice chat assistant for menstrual health and maternal wellness."
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  intl: ^0.19.0
+  http: ^1.2.0
+  flutter_secure_storage: ^9.0.0
+  url_launcher: ^6.3.0
+  record: ^5.1.2
+  audioplayers: ^6.0.0
+  flutter_local_notifications: ^17.2.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
